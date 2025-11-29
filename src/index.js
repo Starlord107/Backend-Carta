@@ -1,27 +1,43 @@
-const express=require('express');
-const cors=require('cors');
-const app=express();
-const PORT=4000;
+const express = require("express");
+const cors = require("cors");
+const db = require("./db"); // 🔥 Conexión a PostgreSQL
+
+const app = express();
+
+// Railway te pasa el puerto en process.env.PORT
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/',(req,res)=>{
-    res.send('hola desde el backend');
+// Ruta de prueba
+app.get("/", (req, res) => {
+  res.send("Backend funcionando correctamente 🚀");
 });
 
-const productosRouter=require('./routes/productos');
-app.use('/api/productos',productosRouter);
-const mesasRouter=require('./routes/mesas');
-console.log("Mesas cargadas correctamente");
-app.use('/api/mesas',mesasRouter);
+// ======================
+//     RUTAS
+// ======================
 
-app.listen(PORT,()=>{
-    console.log(`Servidor esta escuchando en el puerto  http://localhost:${PORT}`);
+// Productos
+const productosRouter = require("./routes/productos");
+app.use("/api/productos", productosRouter);
+
+// Mesas
+const mesasRouter = require("./routes/mesas");
+app.use("/api/mesas", mesasRouter);
+
+// Pedidos
+const pedidosRouter = require("./routes/pedidos");
+app.use("/api/pedidos", pedidosRouter);
+
+// Camareros
+const camarerosRouter = require("./routes/camareros");
+app.use("/api/camareros", camarerosRouter);
+
+// ======================
+//   INICIAR SERVIDOR
+// ======================
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
-
-const pedidosRouter=require('./routes/pedidos');
-app.use('/api/pedidos',pedidosRouter);
-
-const camarerosRouter=require("./routes/camareros");
-app.use("/api/camareros",camarerosRouter);
