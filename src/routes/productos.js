@@ -2,32 +2,29 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Obtener todos los productos con sus formatos reales
-router.get("/", (req, res) => {
-  const sql = `
-    SELECT 
-      p.id AS producto_id,
-      p.nombre,
-      p.precio AS precio_base,
-      p.categoria,
-      p.imagen,
-      p.subcategoria,
+router.get("/", async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+        p.id AS producto_id,
+        p.nombre,
+        p.precio AS precio_base,
+        p.categoria,
+        p.imagen,
+        p.subcategoria,
+        f.id AS formato_id,
+        f.nombre_formato,
+        f.precio AS formato_precio
+      FROM productos p
+      LEFT JOIN formatos f ON p.id = f.producto_id
+      ORDER BY p.id, f.id;
+    `;
 
-      f.id AS formato_id,
-      f.nombre_formato,
-      f.precio AS formato_precio
-
-    FROM productos p
-    LEFT JOIN formatos f ON p.id = f.producto_id
-    ORDER BY p.id;
-  `;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
+    const result = await db.query(sql);
 
     const productosMap = {};
 
-    rows.forEach(row => {
+    result.rows.forEach(row => {
       if (!productosMap[row.producto_id]) {
         productosMap[row.producto_id] = {
           id: row.producto_id,
@@ -40,7 +37,6 @@ router.get("/", (req, res) => {
         };
       }
 
-      // Si tiene formato, añadirlo
       if (row.formato_id) {
         productosMap[row.producto_id].formatos.push({
           id: row.formato_id,
@@ -51,7 +47,10 @@ router.get("/", (req, res) => {
     });
 
     res.json(Object.values(productosMap));
-  });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

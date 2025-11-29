@@ -1,25 +1,31 @@
 const express = require("express");
 const router = express.Router();
+const db = require("../db");
 
-// IMPORTA TU DB
-const db = require("../db"); // o según tu ruta real
-
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { usuario, password } = req.body;
 
-  db.get(
-    "SELECT * FROM camareros WHERE usuario = ? AND password = ?",
-    [usuario, password],
-    (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
+  try {
+    const result = await db.query(
+      "SELECT * FROM camareros WHERE usuario = $1 AND password = $2",
+      [usuario, password]
+    );
 
-      if (!row) {
-        return res.status(401).json({ error: "Credenciales incorrectas" });
-      }
-
-      res.json({ ok: true, usuario: row.usuario, nombre: row.nombre });
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: "Credenciales incorrectas" });
     }
-  );
+
+    const row = result.rows[0];
+
+    res.json({
+      ok: true,
+      usuario: row.usuario,
+      nombre: row.nombre,
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

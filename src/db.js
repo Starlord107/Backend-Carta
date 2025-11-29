@@ -1,22 +1,15 @@
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require("pg");
 
-const db = new sqlite3.Database('./restaurante.db', (err) => {
-  if (err) {
-    console.error('❌ Error al abrir la base de datos:', err.message);
-  } else {
-    console.log('✅ Base de datos SQLite conectada');
-  }
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,  // Requerido por Railway
+  },
 });
 
-// Crear tabla de productos si no existe
-db.run(`
-  CREATE TABLE IF NOT EXISTS productos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT,
-    precio REAL,
-    categoria TEXT,
-    imagen TEXT
-  )
-`);
+// Probar conexión
+pool.connect()
+  .then(() => console.log("✅ Conectado a PostgreSQL en Railway"))
+  .catch(err => console.error("❌ Error conectando a PostgreSQL:", err));
 
-module.exports = db;
+module.exports = pool;
