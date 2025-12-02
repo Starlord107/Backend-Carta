@@ -1,0 +1,12 @@
+{
+"version":2,
+"builds":[
+    {"src":"api//**/*.js","use":"@verlce/node"}
+],
+"routes":[
+       { "src": "/api/(.*)", "dest": "/api/$1" }
+ 
+]
+
+
+}

@@ -1,8 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const db = require("../db");
+const db = require("../src/db");
 
-router.get("/", async (req, res) => {
+module.exports = async (req, res) => {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Método no permitido" });
+  }
+
   try {
     const sql = `
       SELECT 
@@ -46,11 +48,9 @@ router.get("/", async (req, res) => {
       }
     });
 
-    res.json(Object.values(productosMap));
+    return res.json(Object.values(productosMap));
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
-});
-
-module.exports = router;
+};
