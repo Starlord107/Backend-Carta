@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../src/db");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
