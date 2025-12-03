@@ -1,6 +1,9 @@
 const db = require("./db");
+const cors=require("./_cors");
 
 module.exports = async (req, res) => {
+    if (cors(req, res)) return;
+
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Método no permitido" });
   }

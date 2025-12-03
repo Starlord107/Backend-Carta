@@ -1,18 +1,9 @@
 const db = require("../db");
+const cors = require("./_cors");
 
 module.exports = async (req, res) => {
-  // ------------------------------
-  //        🔥 CORS FIX 🔥
-  // ------------------------------
-  res.setHeader("Access-Control-Allow-Origin", "https://frontend-carta.vercel.app");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Responder preflight request (OPTIONS)
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-  // ------------------------------
+  // CORS middleware
+  if (cors(req, res)) return;
 
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
@@ -20,7 +11,7 @@ module.exports = async (req, res) => {
 
   let body = req.body;
 
-  // Vercel necesita parsear el body si viene como texto
+  // Vercel: parse body if comes as string
   if (!body || typeof body === "string") {
     try {
       body = JSON.parse(body);
