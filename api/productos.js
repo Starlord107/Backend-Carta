@@ -32,33 +32,36 @@ module.exports = async (req, res) => {
     const productosMap = {};
 
     result.rows.forEach(row => {
-      if (!productosMap[row.producto_id]) {
-        productosMap[row.producto_id] = {
-          id: row.producto_id,
-          nombre: row.nombre,
-          precio: row.precio_base,
-          categoria: row.categoria,
-          imagen: row.imagen,
-          subcategoria: row.subcategoria,
-          descripcioninfo: row.descripcioninfo ?? "",
-          formatos: []
-        };
-           }     else {
-  // Si ya existía, NO tocar descripcioninfo
-  if (!productosMap[row.producto_id].descripcioninfo && row.descripcioninfo) {
+  // Crear el producto si no existe
+  if (!productosMap[row.producto_id]) {
+    productosMap[row.producto_id] = {
+      id: row.producto_id,
+      nombre: row.nombre,
+      precio: row.precio_base,
+      categoria: row.categoria,
+      imagen: row.imagen,
+      subcategoria: row.subcategoria,
+      descripcioninfo: "",   // inicializamos vacío
+      formatos: []
+    };
+  }
+
+  // Solo asignar descripcioninfo si row tiene un valor real
+  if (row.descripcioninfo && productosMap[row.producto_id].descripcioninfo === "") {
     productosMap[row.producto_id].descripcioninfo = row.descripcioninfo;
   }
-      }
 
-      if (row.formato_id) {
-        productosMap[row.producto_id].formatos.push({
-          id: row.formato_id,
-          nombre: row.nombre_formato,
-          precio: row.formato_precio,
-
-        });
-      }
+  // Añadir formato
+  if (row.formato_id) {
+    productosMap[row.producto_id].formatos.push({
+      id: row.formato_id,
+      nombre: row.nombre_formato,
+      precio: row.formato_precio
     });
+  }
+});
+
+      
     console.log("Productos MAp:",productosMap)
     return res.json(Object.values(productosMap));
 
