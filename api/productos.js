@@ -17,9 +17,11 @@ module.exports = async (req, res) => {
         p.categoria,
         p.imagen,
         p.subcategoria,
+        p.descripcioninfo,
         f.id AS formato_id,
         f.nombre_formato,
         f.precio AS formato_precio
+        
       FROM productos p
       LEFT JOIN formatos f ON p.id = f.producto_id
       ORDER BY p.id, f.id;
@@ -38,6 +40,7 @@ module.exports = async (req, res) => {
           categoria: row.categoria,
           imagen: row.imagen,
           subcategoria: row.subcategoria,
+          descripcioninfo: row.descripcioninfo,
           formatos: []
         };
       }
@@ -46,7 +49,8 @@ module.exports = async (req, res) => {
         productosMap[row.producto_id].formatos.push({
           id: row.formato_id,
           nombre: row.nombre_formato,
-          precio: row.formato_precio
+          precio: row.formato_precio,
+
         });
       }
     });
