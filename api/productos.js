@@ -40,9 +40,14 @@ module.exports = async (req, res) => {
           categoria: row.categoria,
           imagen: row.imagen,
           subcategoria: row.subcategoria,
-          descripcioninfo: row.descripcioninfo,
+          descripcioninfo: row.descripcioninfo ?? "",
           formatos: []
         };
+           }     else {
+  // Si ya existía, NO tocar descripcioninfo
+  if (!productosMap[row.producto_id].descripcioninfo && row.descripcioninfo) {
+    productosMap[row.producto_id].descripcioninfo = row.descripcioninfo;
+  }
       }
 
       if (row.formato_id) {
