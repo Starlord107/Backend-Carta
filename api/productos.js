@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
         });
       }
     });
-
+    console.log("Productos MAp:",productosMap)
     return res.json(Object.values(productosMap));
 
   } catch (err) {
